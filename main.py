@@ -7,6 +7,18 @@ import json
 user = 123456
 passwd = b'base64encoded password'
 
+
+def isShuForAll():
+	ssid = "Shu(ForAll)"
+	lines = []
+	with os.popen("iwconfig 2>&1 | grep '%s'" % ssid, "r") as out:
+		lines = out.readlines()
+	if len(lines) == 0:
+		return False
+	else:
+		return True
+
+
 def check_connect():
 	r = requests.get("http://10.10.9.9:8080")
 	if "success.jsp" in r.url:
@@ -34,33 +46,27 @@ def connect():
 		return False, resp["message"]
 
 
-def auto_connect():
+def start_connect():
 	t = time.strftime("%Y-%m-%d %H:%M:%S")
-	log = t + " %s"
+	if not isShuForAll():
+		print("%s not connnect shuforall" % t)
+		return
 	status = check_connect()
 	if status:
-		print("connected")
-		log = log % "connected"
-		r = True
+		print("%s already connected" % t)
 	else:
 		r, msg = connect()
 		if r:
-			print("success")
-			log = log % "success"
+			print("%s connect success" % t)
 		else:
-			print("failed, %s" % msg)
-			log = log % ("failed" + msg)
-			r = False
-	os.system("echo %s >> connect.log" % log)
-	return r
+			print("%s connect failed: %s" % (t, msg))
+
 
 def main():
-	r = False
 	try:
-		r = auto_connect()
-	except:
-		pass
+		start_connect()
+	except Exception as e:
+		print(e)
 
 if __name__ == '__main__':
 	main()
-	# time.strftime("%Y-%m-%d %H:%M:%S")
