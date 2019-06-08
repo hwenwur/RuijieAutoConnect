@@ -6,10 +6,9 @@ import json
 
 user = 123456
 passwd = b'base64encoded password'
-
+ssid = "Shu(ForAll)"
 
 def isShuForAll():
-	ssid = "Shu(ForAll)"
 	lines = []
 	with os.popen("iwconfig 2>&1 | grep '%s'" % ssid, "r") as out:
 		lines = out.readlines()
